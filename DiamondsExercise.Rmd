@@ -9,13 +9,15 @@ The following is my full notes/results from performing the Udacity Diamonds Prom
 
 ###Section One - Answers to introductory questions:
 There are 53940 observations and 10 variables as can be seen with the str f(x).  3 of the variables are ordered factors. 
-```{r,echo=FALSE}
+```{r,echo=FALSE,warning=FALSE}
 #Load the Libraries
 library(ggplot2)
 data(diamonds)
 library(moments)
 library(ggplot2)
 library(ggthemes)
+library(gridExtra)
+library(plotly)
 
 #note, there are 53940 obs and 10 variables as can be seen with the str f(x).  All other answers to questions are here, as well.
 str(diamonds)
@@ -88,15 +90,14 @@ G1+
 ```
 
 
-###Section Six - Answer questions by Cut:
-Max followed by Min and then Median
+###Section Six - Answer for max, min, and median questions by Cut, in that order:
 ```{r, echo=FALSE}
 by(diamonds$price,diamonds$cut,max)
 by(diamonds$price,diamonds$cut,min)
 by(diamonds$price,diamonds$cut,median)
 ```
 
-###Section Seven - add a parameter to facet_wrap so that the y-axis in the histograms are not fixed.
+###Section Seven - Add a parameter to facet_wrap so that the y-axis in the histograms are not fixed.
 ```{r,echo=FALSE, fig.width=10,warning=FALSE,fig.align='center'}
 G1 +
   geom_histogram(binwidth = 500, colour = "white", fill = "darkgreen") +
@@ -119,3 +120,44 @@ ggplot(data = subset(diamonds,!is.na(price)), aes(x = price/carat)) +
 
 ```
 
+### Section Nine - Investigate the price of diamonds using box plots.
+Also use numerical summaries and one of the following categorical variables: cut, clarity, or color. Then use a boxplot to illustrate price/carat by color.
+Note: I use the Plotly package for 2 base cases and the price/carat illustration here for experimentation and variety.  
+  
+####Price by cut:
+```{r,echo=FALSE, fig.width=10,warning=FALSE,fig.align='center'}
+plot_ly(diamonds, y = price, color = cut, type = "box")
+```
+  
+####Price by color:
+```{r,echo=FALSE, fig.width=10,warning=FALSE,fig.align='center'}
+plot_ly(diamonds, y = price, color = color, type = "box")
+```
+  
+####Price/carat by color:
+```{r,echo=FALSE, fig.width=10,warning=FALSE,fig.align='center'}
+plot_ly(diamonds, y = price/carat, color = color, type = "box")
+```
+
+####Price by cut and color:
+```{r,echo=FALSE, fig.width=10,warning=FALSE,fig.align='center'}
+ggplot(data = diamonds, aes(y = price, x = cut, fill = color)) +
+  geom_boxplot() +
+  theme_few()+
+  scale_fill_pander() +
+  ylab("Price per Diamond") +
+  xlab("Cut of Diamond")
+
+```
+
+
+
+### Section 10 - Answers to IQR questions on boxplots above:
+```{r,echo=FALSE}
+iqrford <- subset(diamonds,color == 'D')
+iqrforj <- subset(diamonds,color == 'J')
+```
+
+The 25th and 75th percentiles for colors D and J can be found by hovering over the box-plots above.  
+IQR for color D: `r IQR(iqrford$price)`  
+IQR for color J: `r IQR(iqrforj$price)`
