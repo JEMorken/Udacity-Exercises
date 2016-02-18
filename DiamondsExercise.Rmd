@@ -5,7 +5,7 @@ date: "February 15, 2016"
 output: html_document
 ---
 
-The following is my set of notes/results from performing the first Udacity Diamonds Promblem set.
+The following is my set of notes/results from performing the first Udacity Diamonds problem set.
 
 ###Section One - Answers to introductory questions:
 There are 53940 observations and 10 variables as can be seen with the str f(x).  3 of the variables are ordered factors. 
@@ -38,7 +38,7 @@ G1 +
 
 ```
 
-**Note that the above receives a warning message that R "Removed 2 rows containing missing values (geom_bar); however, I have looked for nulls and NAs throughout the dataset to no avail.  What am I missing?  
+**Note that the above receives a warning message that R "Removed 2 rows containing missing values (geom_bar); however, I have looked for nulls and NAs throughout the data set to no avail.  What am I missing?  
 
 Summary Stats | #
 ------- | --------
@@ -55,7 +55,7 @@ How many diamonds cost $15,000 or more: `r sum(diamonds$price >= 15000)`
 
 
 ###Section Four - Exploring the Largest Peak in the Histogram:
-Udacity directions included [in order below]: changing the limits (Dark Green), binwidths (Green), and breaks (Light Green).  
+Udacity directions included [in order below]: changing the limits (Dark Green), bin-widths (Green), and breaks (Light Green).  
 ```{r, echo=FALSE, fig.width=3, warning=FALSE}
 
 G1 +
@@ -125,7 +125,7 @@ ggplot(data = subset(diamonds,!is.na(price)), aes(x = price/carat)) +
 I chose to remove the free scale y axis to see relative frequency of each price/carat more clearly.
 
 ### Section Nine - Investigate the price of diamonds using box plots.
-Additional instructions - Also use numerical summaries and one of the following categorical variables: cut, clarity, or color. Then use a boxplot to illustrate price/carat by color.
+Additional instructions - Also use numerical summaries and one of the following categorical variables: cut, clarity, or color. Then use a box plot to illustrate price/carat by color.
 Note: I use the Plotly package for 2 base cases and the price/carat illustration here for experimentation and variety.  
   
 ####Price by cut:
