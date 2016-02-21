@@ -1,0 +1,140 @@
+---
+title: "Diamonds Exercise II"
+author: "Jonathan Morken"
+date: "February 20, 2016"
+output: html_document
+---
+
+The following is my set of notes/results from performing the second Udacity Diamonds problem set.  
+
+###Section One - Create a scatterplot of price vs. x using ggplot syntax:  
+
+```{r,echo=FALSE, include = FALSE, message = FALSE, warning=FALSE}
+#Load the Libraries
+library(ggplot2)
+library(dplyr)
+data(diamonds)
+library(moments)
+library(ggplot2)
+library(ggthemes)
+library(gridExtra)
+library(plotly)
+#Make diamonds more than just a "promise".
+str(diamonds)
+```
+
+Basic Plot:
+```{r, echo=FALSE}
+ggplot(data = diamonds,aes(x = x, y = price)) +
+  geom_point()
+```
+
+####Observations  
+The overall shape is similar to that of an increasing exponential function. Transparency should be employed to better illustrate concentration.
+
+####Answers to section questions  
+What are the correlations of the following:  
+(1) price to x: `r cor(diamonds$price,diamonds$x)`   
+(2) price to y: `r cor(diamonds$price,diamonds$y)`  
+(3) price to z: `r cor(diamonds$price,diamonds$z)`
+
+
+###Section Two - Create a simple scatterplot of price vs. depth:
+
+```{r,echo=FALSE, message = FALSE, warning=FALSE}
+g2 <- ggplot(data = diamonds,aes(x = depth,y = price)) 
+g2 +  geom_point()
+```
+
+####Part Two - Change the code to make the transparency of the points to be 1/100 of what they are now and mark the x-axis every 2 units.
+```{r}
+g2 + geom_point(alpha = 1/100) +
+  scale_x_continuous(breaks = seq(40,80,2))
+```
+
+####Part Three - Observations and answers to questions
+Based on [visually inspecting] the scatter-plot of depth vs price, most diamonds are between what values of depth?  60 & 64  
+What's the correlation of depth vs. price? `r cor(diamonds$price,diamonds$depth)'  
+This correlation is too low to suggest a strong relationship between depth and price.
+
+###Section Three - Create a scatterplot of price vs carat and omit the top 1% of price and carat values.
+
+```{r,echo=FALSE, message = FALSE, warning=FALSE}
+g3 <- ggplot(data = diamonds,aes(x = carat,y = price)) 
+g3 +  geom_point() +
+  xlim(0,quantile(diamonds$carat,0.99)) +
+  ylim(0,quantile(diamonds$price,0.99))
+```
+
+####Part Two - Create a scatterplot of price vs. volume (x * y * z). Create a new variable for volume in the diamonds data frame. This will be useful in a later exercise. Don't make any adjustments to the plot just yet.
+```{r,echo=FALSE, message = FALSE, warning=FALSE}
+
+diamonds$volume <- (diamonds$x*diamonds$y*diamonds$z)
+
+g4 <- ggplot(data = diamonds,aes(x = volume,y = price)) 
+g4 +  geom_point()
+
+```
+
+####Part Three - Create data frame with volume > 0 & < 800 then provide observations on the above graph and answers to questions:
+```{r,echo=FALSE, message = FALSE, warning=FALSE}
+diamonds_lmtd_volume <- subset(diamonds, diamonds$volume < 800 & diamonds$volume > 0)
+```
+This is a very steep, increasing curve that is over-plotted.  There also seem to be some erroneous outliers that should be ignored.  There are `r nrow(subset(diamonds,diamonds$volume ==0))` diamonds with 0 volume! Correlation: if you include diamonds with volume >0 and <800, the correlation of price to volume is equal to `r cor(diamonds_lmtd_volume$volume,diamonds_lmtd_volume$price)`
+
+###Section Four - Adjust the transparency of the points and add a linear model to the plot.
+```{r,echo=FALSE, message = FALSE, warning=FALSE}
+
+g5 <- ggplot(data = diamonds_lmtd_volume,aes(x = volume,y = price)) 
+g5 +  geom_point(alpha = 1/100) +
+  geom_smooth(method = "lm", color = "red")
+
+```
+####Answers to questions
+I believe there are better models than the linear one presented above to predict price based on volume.  For instance, a quadratic model like y= x + I(x^2) would likely be a closer fit.  That said, both lose effectiveness above the 150 mark for volume.
+
+### Section Three - See instructions below:
+
+#### Part one 
+Use the function dplyr package to create a new data frame containing info on diamonds by clarity. Name the data frame diamondsByClarity. The data frame should contain the following variables in this order:
+  (1) mean_price
+  (2) median_price
+  (3) min_price
+  (4) max_price
+  (5) n
+where n is the number of diamonds in each level of clarity.
+```{r,echo=FALSE, message = FALSE, warning=FALSE}
+diamondsByClarity <- diamonds %>%
+  group_by(clarity) %>%
+  summarise(mean_price = mean(price),
+          median_price = median(price),
+          min_price = min(price),
+          max_price = max(price),
+          n = n()) 
+
+head(diamondsByClarity,8)
+```
+
+####Part Two - Use summary data frames with the mean price by clarity and color to write additional code to create two bar plots on one output image using the grid.arrange() function from the package gridExtra.
+
+```{r,echo=FALSE, message = FALSE, warning=FALSE}
+#Create diamonds_mp_by_clarity
+diamonds_by_clarity <- group_by(diamonds, clarity)
+diamonds_mp_by_clarity <- summarise(diamonds_by_clarity, mean_price = mean(price))
+
+#Create diamonds_mp_by_color
+diamonds_by_color <- group_by(diamonds, color)
+diamonds_mp_by_color <- summarise(diamonds_by_color, mean_price = mean(price))
+
+#graph both
+g6 <- ggplot(data = diamonds_mp_by_clarity, aes(x = clarity, y = mean_price))+
+  geom_bar(stat = "identity")
+g7 <- ggplot(data = diamonds_mp_by_color, aes(x = color, y = mean_price))+
+  geom_bar(stat = "identity")
+grid.arrange(g6,g7,ncol = 2)
+
+```
+####Observations 
+These aren't behaving as I would have expected.  
+Clarity: Price doesn't follow quality of clarity. 
+Color: Mean price increases as as color quality decreases.
